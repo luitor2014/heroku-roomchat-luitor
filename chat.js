@@ -11,7 +11,7 @@ var net = require('net');
 var PORT = process.env.PORT;
 //socket.io - fin
 var client = new net.Socket();
-client.connect(48706, '127.0.0.1', function() {
+client.connect(58736, '127.0.0.1', function() {
 	console.log('Connected');
 	client.write('Hello, server! Love, Client.');
 });
