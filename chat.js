@@ -1,42 +1,31 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var PORT = process.env.PORT || 8080;
-
-app.get('/',function(req,res){
-	//request : son cabeceras y datos que nos envia el navegador.
-	//response : son todo lo que enviamos desde el servidor.
-	res.sendFile(__dirname + '/index.html');
+var readline = require('readline');
+var rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  terminal: false
 });
 
-io.on('connection',function(socket){
-	console.log("usuario id : %s",socket.id);
+var net = require('net');
+//socket.io
 
-	var channel = 'channel-a';
-
-	socket.broadcast.emit('message','El usuario '+socket.id+' se ha conectado!','System');
-
-	socket.join(channel);
-
-	socket.on('message',function(msj){
-		//io.emit('message',msj,socket.id);
-		io.sockets.in(channel).emit('message',msj,socket.id); //enviar a todos del canal
-		//socket.broadcast.to(channel).emit('message',msj,socket.id); //enviar a todos del canal menos a mi
-	});
-
-	socket.on('disconnect',function(){
-		console.log("Desconectado : %s",socket.id);
-	});
-
-	socket.on('change channel',function(newChannel){
-		socket.leave(channel);
-		socket.join(newChannel);
-		channel = newChannel;
-		socket.emit('change channel',newChannel);
-	});
-
+var PORT = process.env.PORT;
+//socket.io - fin
+var client = new net.Socket();
+client.connect(55210, 'localhost', function() {
+	console.log('Connected');
+	client.write('Hello, server! Love, Client.');
 });
 
-http.listen(PORT,function(){
-	console.log('el servidor esta escuchando el puerto %s',PORT);
+client.on('data', function(data) {
+	console.log('Received: ' + data);
 });
+
+client.on('close', function() {
+	console.log('Connection closed');
+});
+
+rl.on('line', function(dt){
+	client.write(dt.toString());
+});
+
+console.log("Client TCP..."+PORT);
