@@ -1,31 +1,34 @@
-var readline = require('readline');
-var rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  terminal: false
+ var net = require('net');
+ var portS = process.env.PORT;
+ var io = require('socket.io').listen(portS);
+//Keep track of connections
+var count = 0;
+
+var server = net.createServer(function (connection) {
+    connection.setEncoding('utf8');
+    connection.write(
+        '\n > welcome to \033[92mnode-chat\033[39m!' +
+        '\n > ' +count+ ' other people are connected at this time.' +
+        '\n > please write your name and press enter: '
+    );
+    count++;
+    connection.on('data', function (data) {
+       console.log(data);
+    });
+
+    connection.on('close', function (error) {
+        console.log('Error: ' + error);
+        count--;
+    });
 });
 
-var net = require('net');
-//socket.io
+var port = process.env.PORT || 1337;
 
-var PORT = process.env.PORT;
-//socket.io - fin
-var client = new net.Socket();
-client.connect(18083, '127.0.0.1', function() {
-	console.log('Connected');
-	client.write('Hello, server! Love, Client.');
+server.listen(port, function () {
+    console.log('\033[90m   server listening on *:' + port + '\033[39m');
+     console.log('portSocket: '+portS);
 });
 
-client.on('data', function(data) {
-	console.log('Received: ' + data);
-});
-
-client.on('close', function() {
-	console.log('Connection closed');
-});
-
-rl.on('line', function(dt){
-	client.write(dt.toString());
-});
-
-console.log("Client TCP..."+PORT);
+setInterval(function(){
+  console.log("Escuchando...");
+},4000);
