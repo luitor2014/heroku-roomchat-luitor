@@ -29,6 +29,17 @@ server.listen(port, function () {
      console.log('portSocket: '+portS);
 });
 
+io.on('connection',function(socket){
+	console.log("Conectado socket.io");
+	//io.sockets.emit("message_res", "Hola desde el servidor TCP");
+	//socket.emit("message_res", "Hola desde el servidor TCP");
+	//socket.broadcast.emit("message_res", "Hola desde el servidor TCP");
+	socket.on('message_req', function(dt){
+		//client.write(dt);
+		//socket.emit("message_res", "Hola desde el servidor TCP");
+        //socket.broadcast.emit("message_res", "Hola desde el servidor TCP");
+    });
+});
 setInterval(function(){
   console.log("Escuchando...");
 },4000);
