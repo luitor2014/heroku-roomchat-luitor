@@ -1,45 +1,31 @@
- var net = require('net');
- var portS = process.env.PORT;
- var io = require('socket.io').listen(portS);
-//Keep track of connections
+var net = require('net');
+url  = require("url");
+proxy = url.parse(process.env.PROXIMO_URL)
+//var sys = require('sys');
 var count = 0;
+var port = process.env.PORT || 1337;
+var host = '54.235.132.133'; // heroku-app-name when deployed
+var server_host = "tcpserver123.herokuapp.com"; 
+var server = net.createServer(function (socket) { 
 
-var server = net.createServer(function (connection) {
-    connection.setEncoding('utf8');
-    connection.write(
-        '\n > welcome to \033[92mnode-chat\033[39m!' +
-        '\n > ' +count+ ' other people are connected at this time.' +
-        '\n > please write your name and press enter: '
-    );
-    count++;
-    connection.on('data', function (data) {
-       console.log(data);
-    });
-
-    connection.on('close', function (error) {
+  // sys.puts("Connection from " + socket.remoteAddress);
+   socket.write("Hello Dude!\n");
+   socket.addListener("data", function (data) {
+          // do stuff with (data) from client here 
+          console.log(data.toString());
+     });
+     
+     socket.on('close', function (error) {
         console.log('Error: ' + error);
         count--;
     });
-});
+   });
 
-var port = process.env.PORT || 1337;
+server.listen(port);
 
-server.listen(port, function () {
-    console.log('\033[90m   server listening on *:' + port + '\033[39m');
-     console.log('portSocket: '+portS);
-});
+    console.log('server listening on: ' + port +' host: '+host);
 
-io.on('connection',function(socket){
-	console.log("Conectado socket.io");
-	//io.sockets.emit("message_res", "Hola desde el servidor TCP");
-	//socket.emit("message_res", "Hola desde el servidor TCP");
-	//socket.broadcast.emit("message_res", "Hola desde el servidor TCP");
-	socket.on('message_req', function(dt){
-		//client.write(dt);
-		//socket.emit("message_res", "Hola desde el servidor TCP");
-        //socket.broadcast.emit("message_res", "Hola desde el servidor TCP");
-    });
-});
+
 setInterval(function(){
-  console.log("Escuchando...");
+  console.log("Escuchando..."+port );
 },4000);
